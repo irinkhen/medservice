@@ -46,13 +46,7 @@ public class DoctorServiceImpl implements DoctorService {
         final UUID id = UUID.randomUUID();
 
         doctorTable.setId(id);
-        doctorTable.setFirstName(doctor.getFirstName());
-        doctorTable.setLastName(doctor.getLastName());
-        doctorTable.setEmail(doctor.getEmail());
-        doctorTable.setPassword(doctor.getPassword());
-        doctorTable.setRole(doctor.getRole());
-        doctorTable.setIsActive(doctor.getIsActive());
-        doctorTable.setSpecialization(doctor.getSpecialization());
+        setDoctorObject(doctorTable, doctor);
 
         return doctorTable;
     }
@@ -83,22 +77,33 @@ public class DoctorServiceImpl implements DoctorService {
         Doctors doctorTable;
         if (doctorRepository.findById(id).isPresent()) {
             doctorTable = doctorRepository.findById(id).get();
-
-            doctorTable.setFirstName(doctor.getFirstName());
-            doctorTable.setLastName(doctor.getLastName());
-            doctorTable.setEmail(doctor.getEmail());
-            doctorTable.setPassword(doctor.getPassword());
-            doctorTable.setRole(doctor.getRole());
-            doctorTable.setIsActive(doctor.getIsActive());
-            doctorTable.setSpecialization(doctor.getSpecialization());
+            setDoctorObject(doctorTable, doctor);
 
             return doctorTable;
         } else return null;
     }
 
     public Doctors deleteDoctorFromService(UUID id) {
-        Doctors doctorTableObject = getDoctorById(id);
-        doctorTableObject.setIsActive(false);
-        return doctorTableObject;
+        Doctors doctorTable;
+
+        if (doctorRepository.findById(id).isPresent()) {
+            doctorTable = doctorRepository.findById(id).get();
+            doctorTable.setIsActive(false);
+            log.info("Doctor with id {} was deleted", id);
+            return doctorTable;
+        }
+
+        log.info("Doctor with id {} not found", id);
+        return null;
+    }
+
+    private void setDoctorObject(Doctors doctorTable, Doctors doctorObjectInput) {
+        doctorTable.setFirstName(doctorObjectInput.getFirstName());
+        doctorTable.setLastName(doctorObjectInput.getLastName());
+        doctorTable.setEmail(doctorObjectInput.getEmail());
+        doctorTable.setPassword(doctorObjectInput.getPassword());
+        doctorTable.setRole(doctorObjectInput.getRole());
+        doctorTable.setIsActive(doctorObjectInput.getIsActive());
+        doctorTable.setSpecialization(doctorObjectInput.getSpecialization());
     }
 }

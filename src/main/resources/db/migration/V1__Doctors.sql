@@ -1,6 +1,6 @@
 -- SET search_path TO public;
 -- DROP EXTENSION IF EXISTS "uuid-ossp";
--- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 create table doctors
 (

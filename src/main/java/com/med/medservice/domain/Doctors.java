@@ -38,7 +38,7 @@ public class Doctors {
     @Column(unique = true)
     String email;
     Boolean isActive;
-    @ManyToMany(cascade = ALL)
+    @OneToMany(cascade = ALL)
     List<Specialization> specialization;
     @Enumerated(value = STRING)
     Role role;

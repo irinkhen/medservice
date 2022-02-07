@@ -3,6 +3,7 @@ package com.med.medservice.controller;
 import com.med.medservice.domain.Doctors;
 import com.med.medservice.service.DoctorService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestController
 @RequestMapping("/api/v1/doctor")
 @AllArgsConstructor
+@Slf4j
 public class DoctorController {
 
     @Autowired
@@ -32,6 +34,7 @@ public class DoctorController {
     public ResponseEntity<Doctors> getDoctorById(@PathVariable UUID id) {
         Doctors doctor = doctorService.getDoctorById(id);
         if (id == null) {
+            log.info("Doctor with id {} not found!", id);
             return new ResponseEntity<>(BAD_REQUEST);
         } else if (doctor == null) return new ResponseEntity<>(NOT_FOUND);
         return ResponseEntity.accepted().body(doctor);
@@ -48,9 +51,12 @@ public class DoctorController {
     public ResponseEntity<Doctors> createDoctor(@RequestBody Doctors doctor) {
         Doctors doctorTableObject = doctorService.setDoctorInfoByDb(doctor);
         if (doctorTableObject.getEmail() == null && doctorTableObject.getPassword() == null) {
+            log.info("Email or password cannot be null");
             return ResponseEntity.badRequest().body(doctorTableObject);
-        } else if (doctorTableObject.getRole() == null)
+        } else if (doctorTableObject.getRole() == null) {
+            log.info("You need to fill user role");
             return ResponseEntity.badRequest().body(doctorTableObject);
+        }
 
         doctorService.saveDataIntoDB(doctorTableObject);
         return ResponseEntity.accepted().body(doctorTableObject);
@@ -58,22 +64,21 @@ public class DoctorController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Doctors> updateDoctorData(@PathVariable UUID id, @RequestBody Doctors doctor) {
-        //написать
-        //Doctors user = doctorService.getDoctorById(id);
         Doctors doctorTableObject = doctorService.updateDoctorInfo(id, doctor);
-
         doctorService.saveDataIntoDB(doctorTableObject);
 
         return ResponseEntity.accepted().body(doctorTableObject);
     }
 
     @DeleteMapping("/{id}")
-    public Doctors deleteDoctor(@PathVariable UUID id) {
+    public ResponseEntity<Doctors> deleteDoctor(@PathVariable UUID id) {
         Doctors doctorTableObject = doctorService.deleteDoctorFromService(id);
         doctorService.saveDataIntoDB(doctorTableObject);
-        if (doctorTableObject.getIsActive())
-            return (Doctors) ResponseEntity.accepted();
-        else return (Doctors) ResponseEntity.badRequest();
+        if (doctorTableObject.getIsActive()) {
+            log.info("User with id {} is not deleted", id);
+            return ResponseEntity.badRequest().body(doctorTableObject);
+        }
+        else return ResponseEntity.accepted().body(doctorTableObject);
     }
 
 }

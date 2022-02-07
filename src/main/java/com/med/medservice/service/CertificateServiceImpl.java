@@ -13,7 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Service
 @Slf4j
-public class CertificateServiceImpl {
+public class CertificateServiceImpl implements  CertificateService {
 
     private final CertificatesRepository certificatesRepository;
 
@@ -39,19 +39,8 @@ public class CertificateServiceImpl {
     public Certificates createCertificateObject(Certificates certificate) {
         Certificates certificateTable = new Certificates();
         final UUID id = UUID.randomUUID();
-
         certificateTable.setId(id);
-        certificateTable.setTherapist(certificate.getTherapist());
-        certificateTable.setPatient(certificate.getPatient());
-        certificateTable.setVisionTest(certificate.getVisionTest());
-        certificateTable.setPsychoanalyse(certificate.getPsychoanalyse());
-        certificateTable.setElectrocardiogram(certificate.getElectrocardiogram());
-        certificateTable.setDiagnose(certificate.getDiagnose());
-        certificateTable.setCreated(certificate.getCreated());
-        certificateTable.setChanged(certificate.getChanged());
-        certificateTable.setIsAvailable(certificate.getIsAvailable());
-
-        certificatesRepository.save(certificateTable);
+        setCertificateObject(certificateTable, certificate);
 
         return certificateTable;
     }
@@ -66,17 +55,36 @@ public class CertificateServiceImpl {
         if (certificatesRepository.findById(id).isPresent()) {
             certificateTable = certificatesRepository.findById(id).get();
 
-            certificateTable.setTherapist(certificate.getTherapist());
-            certificateTable.setPatient(certificate.getPatient());
-            certificateTable.setVisionTest(certificate.getVisionTest());
-            certificateTable.setPsychoanalyse(certificate.getPsychoanalyse());
-            certificateTable.setElectrocardiogram(certificate.getElectrocardiogram());
-            certificateTable.setDiagnose(certificate.getDiagnose());
-            certificateTable.setCreated(certificate.getCreated());
-            certificateTable.setChanged(certificate.getChanged());
-            certificateTable.setIsAvailable(certificate.getIsAvailable());
+            setCertificateObject(certificateTable, certificate);
 
             return certificateTable;
         } else return null;
+    }
+
+    public Certificates deleteCertificateFromAccess(UUID id) {
+        Certificates certificateTable;
+
+        if (certificatesRepository.findById(id).isPresent()) {
+            certificateTable = certificatesRepository.findById(id).get();
+            certificateTable.setIsAvailable(false);
+            log.info("Certificate with id {} was deleted", id);
+            return certificateTable;
+        }
+        log.info("Certificate with id {} not found", id);
+        return null;
+    }
+
+    private Certificates setCertificateObject(Certificates certificateTable, Certificates certificateInput) {
+        certificateTable.setTherapist(certificateInput.getTherapist());
+        certificateTable.setPatient(certificateInput.getPatient());
+        certificateTable.setVisionTest(certificateInput.getVisionTest());
+        certificateTable.setPsychoanalyse(certificateInput.getPsychoanalyse());
+        certificateTable.setElectrocardiogram(certificateInput.getElectrocardiogram());
+        certificateTable.setDiagnose(certificateInput.getDiagnose());
+        certificateTable.setCreated(certificateInput.getCreated());
+        certificateTable.setChanged(certificateInput.getChanged());
+        certificateTable.setIsAvailable(certificateInput.getIsAvailable());
+
+        return certificateTable;
     }
 }
