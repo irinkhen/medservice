@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum Specialists {
     THERAPIST("therapist"),
-    HEMATOLOGIST("hematologist"),
+    CARDIOLOGIST("cardiologist"),
     PSYCHIATRIST("psychiatrist"),
     OCULIST("oculist");
 

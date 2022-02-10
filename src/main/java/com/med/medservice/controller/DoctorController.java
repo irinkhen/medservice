@@ -32,12 +32,14 @@ public class DoctorController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Doctors> getDoctorById(@PathVariable UUID id) {
-        Doctors doctor = doctorService.getDoctorById(id);
+        Doctors doctors = doctorService.getDoctorById(id);
+
         if (id == null) {
             log.info("Doctor with id {} not found!", id);
             return new ResponseEntity<>(BAD_REQUEST);
-        } else if (doctor == null) return new ResponseEntity<>(NOT_FOUND);
-        return ResponseEntity.accepted().body(doctor);
+        } else if (doctors == null) return new ResponseEntity<>(NOT_FOUND);
+
+        return ResponseEntity.accepted().body(doctors);
     }
 
     @GetMapping
@@ -48,37 +50,40 @@ public class DoctorController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<Doctors> createDoctor(@RequestBody Doctors doctor) {
-        Doctors doctorTableObject = doctorService.setDoctorInfoByDb(doctor);
-        if (doctorTableObject.getEmail() == null && doctorTableObject.getPassword() == null) {
-            log.info("Email or password cannot be null");
-            return ResponseEntity.badRequest().body(doctorTableObject);
-        } else if (doctorTableObject.getRole() == null) {
-            log.info("You need to fill user role");
-            return ResponseEntity.badRequest().body(doctorTableObject);
-        }
+    public ResponseEntity<Doctors> createDoctor(@RequestBody Doctors doctors) {
+        Doctors doctorsTableObject = doctorService.setDoctorInfoByDb(doctors);
 
-        doctorService.saveDataIntoDB(doctorTableObject);
-        return ResponseEntity.accepted().body(doctorTableObject);
+        if (doctorsTableObject.getEmail() == null && doctorsTableObject.getPassword() == null) {
+            log.info("Email or password cannot be null");
+            return ResponseEntity.badRequest().body(doctorsTableObject);
+        } else if (doctorsTableObject.getRole() == null) {
+            log.info("You need to fill user role");
+            return ResponseEntity.badRequest().body(doctorsTableObject);
+        }
+        doctorService.saveDataIntoDB(doctorsTableObject);
+
+        return ResponseEntity.accepted().body(doctorsTableObject);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Doctors> updateDoctorData(@PathVariable UUID id, @RequestBody Doctors doctor) {
-        Doctors doctorTableObject = doctorService.updateDoctorInfo(id, doctor);
-        doctorService.saveDataIntoDB(doctorTableObject);
+    public ResponseEntity<Doctors> updateDoctorData(@PathVariable UUID id, @RequestBody Doctors doctors) {
+        Doctors doctorsTableObject = doctorService.updateDoctorInfo(id, doctors);
+        doctorService.saveDataIntoDB(doctorsTableObject);
 
-        return ResponseEntity.accepted().body(doctorTableObject);
+        return ResponseEntity.accepted().body(doctorsTableObject);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Doctors> deleteDoctor(@PathVariable UUID id) {
-        Doctors doctorTableObject = doctorService.deleteDoctorFromService(id);
-        doctorService.saveDataIntoDB(doctorTableObject);
-        if (doctorTableObject.getIsActive()) {
+        Doctors doctorsTableObject = doctorService.deleteDoctorFromService(id);
+        doctorService.saveDataIntoDB(doctorsTableObject);
+
+        if (doctorsTableObject.getIsActive()) {
             log.info("User with id {} is not deleted", id);
-            return ResponseEntity.badRequest().body(doctorTableObject);
+            return ResponseEntity.badRequest().body(doctorsTableObject);
         }
-        else return ResponseEntity.accepted().body(doctorTableObject);
+
+        return ResponseEntity.accepted().body(doctorsTableObject);
     }
 
 }

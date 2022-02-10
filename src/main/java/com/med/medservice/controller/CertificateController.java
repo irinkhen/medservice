@@ -1,6 +1,6 @@
 package com.med.medservice.controller;
 
-import com.med.medservice.domain.Certificates;
+import com.med.medservice.domain.Certificate;
 import com.med.medservice.service.CertificateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,14 +26,14 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/v1/certificate")
-public class MedicalCertificateController {
+public class CertificateController {
 
     @Autowired
     private CertificateService certificateService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Certificates> getCertificateById(@PathVariable UUID id) {
-        Certificates certificate = certificateService.getCertificateById(id);
+    public ResponseEntity<Certificate> getCertificateById(@PathVariable UUID id) {
+        Certificate certificate = certificateService.getCertificateById(id);
         if (id == null) {
             log.info("Certificate id cannot be null");
             return new ResponseEntity<>(BAD_REQUEST);
@@ -49,14 +49,14 @@ public class MedicalCertificateController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Certificates>> getAllCertificates() {
-        List<Certificates> certificatesList = certificateService.getAllCertificatesList();
-        return ResponseEntity.accepted().body(certificatesList);
+    public ResponseEntity<List<Certificate>> getAllCertificates() {
+        List<Certificate> certificateList = certificateService.getAllCertificatesList();
+        return ResponseEntity.accepted().body(certificateList);
     }
 
     @PostMapping
-    public ResponseEntity<Certificates> createCertificate(@RequestBody Certificates certificate) {
-        Certificates certificateObject = certificateService.createCertificateObject(certificate);
+    public ResponseEntity<Certificate> createCertificate(@RequestBody Certificate certificate) {
+        Certificate certificateObject = certificateService.createCertificateObject(certificate);
 
         if (certificateObject.getDiagnose() == null) {
             log.info("Diagnose cannot be null");
@@ -69,18 +69,19 @@ public class MedicalCertificateController {
     }
 
     @PutMapping("/id")
-    public ResponseEntity<Certificates> updateCertificateData(
+    public ResponseEntity<Certificate> updateCertificateData(
             @PathVariable UUID id,
-            @RequestBody Certificates certificate) {
-        Certificates certificateTable = certificateService.updateCertificateInfo(id, certificate);
+            @RequestBody Certificate certificate
+    ) {
+        Certificate certificateTable = certificateService.updateCertificateInfo(id, certificate);
         certificateService.saveDataIntoDB(certificateTable);
 
         return ResponseEntity.accepted().body(certificateTable);
     }
 
     @DeleteMapping("/id")
-    public ResponseEntity<Certificates> deleteCertificateFromDB(@PathVariable UUID id) {
-        Certificates certificateTable = certificateService.deleteCertificateFromAccess(id);
+    public ResponseEntity<Certificate> deleteCertificateFromDB(@PathVariable UUID id) {
+        Certificate certificateTable = certificateService.deleteCertificateFromAccess(id);
         certificateService.saveDataIntoDB(certificateTable);
 
         if (certificateTable.getIsAvailable()) {

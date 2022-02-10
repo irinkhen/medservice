@@ -1,21 +1,21 @@
 package com.med.medservice.service;
 
-import com.med.medservice.domain.Certificates;
+import com.med.medservice.domain.Certificate;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface CertificateService {
 
-    void saveDataIntoDB(Certificates certificateTableObject);
+    void saveDataIntoDB(Certificate certificateTableObject);
 
-    Certificates getCertificateById(UUID id);
+    Certificate getCertificateById(UUID id);
 
-    Certificates createCertificateObject(Certificates certificate);
+    Certificate createCertificateObject(Certificate certificate);
 
-    List<Certificates> getAllCertificatesList();
+    List<Certificate> getAllCertificatesList();
 
-    Certificates updateCertificateInfo(UUID id, Certificates certificate);
+    Certificate updateCertificateInfo(UUID id, Certificate certificate);
 
-    Certificates deleteCertificateFromAccess(UUID id);
+    Certificate deleteCertificateFromAccess(UUID id);
 }

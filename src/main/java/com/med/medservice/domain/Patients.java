@@ -26,4 +26,6 @@ public class Patients {
     String lastName;
     @Column(unique = true)
     String email;
+    @Column(unique = true, nullable = false)
+    String phone;
 }

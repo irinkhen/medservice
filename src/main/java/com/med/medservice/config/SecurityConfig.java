@@ -34,7 +34,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-            //super.configure(http);
             http
                     .csrf().disable()
                     .authorizeRequests()
@@ -43,19 +42,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers(GET, "/api/v1/doctor/**").hasAnyRole(ADMIN.name(), USER.name())
                     .antMatchers(PUT, "/api/v1/doctor/**").hasAnyRole(ADMIN.name(), USER.name())
                     .antMatchers(DELETE, "/api/v1/doctor/**").hasAnyRole(ADMIN.name())
-                    .antMatchers(GET, "/api/v1//certificate/**").hasAnyRole(ADMIN.name())
-                    .antMatchers(GET, "/api/v1//certificate").hasAnyRole(ADMIN.name(), USER.name())
-                    .antMatchers(POST, "/api/v1//certificate").hasAnyRole(ADMIN.name(), USER.name())
-                    .antMatchers(PUT, "/api/v1//certificate/**").hasAnyRole(ADMIN.name(), USER.name())
-                    .antMatchers(DELETE, "/api/v1//certificate/**").hasAnyRole(ADMIN.name())
+                    .antMatchers(GET, "/api/v1/certificate/**").hasAnyRole(ADMIN.name())
+                    .antMatchers(GET, "/api/v1/certificate").hasAnyRole(ADMIN.name(), USER.name())
+                    .antMatchers(POST, "/api/v1/certificate").hasAnyRole(ADMIN.name(), USER.name())
+                    .antMatchers(PUT, "/api/v1/certificate/**").hasAnyRole(ADMIN.name(), USER.name())
+                    .antMatchers(DELETE, "/api/v1/certificate/**").hasAnyRole(ADMIN.name())
                     .antMatchers("/auth").authenticated()
                     .and().httpBasic()
                     .and().sessionManagement().disable();
-
-//        http.csrf().disable()
-//            .authorizeRequests().anyRequest().authenticated()
-//            .and().httpBasic()
-//            .and().sessionManagement().disable();
     }
 
     @Bean

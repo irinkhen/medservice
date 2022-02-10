@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -20,17 +22,17 @@ public class DoctorServiceImpl implements DoctorService {
     private final SpecializationRepository specializationRepository;
 
     @Transactional
-    public void saveDataIntoDB(Doctors doctorTableObject) {
-        doctorRepository.save(doctorTableObject);
-        log.info("Data about doctor {} is saved", doctorTableObject.getId());
+    public void saveDataIntoDB(Doctors doctorsTableObject) {
+        doctorRepository.save(doctorsTableObject);
+        log.info("Data about doctor {} is saved", doctorsTableObject.getId());
     }
 
     public Doctors getDoctorById(UUID id) {
-        Doctors doctor;
+        Doctors doctors;
         if (doctorRepository.findById(id).isPresent()){
-            doctor = doctorRepository.findById(id).get();
+            doctors = doctorRepository.findById(id).get();
             log.info("Get doctor with id {}", id);
-            return doctor;
+            return doctors;
         } else {
             log.info("Doctor with id {} not found!", id);
             return null;
@@ -41,14 +43,14 @@ public class DoctorServiceImpl implements DoctorService {
         return doctorRepository.findAll();
     }
 
-    public Doctors setDoctorInfoByDb(Doctors doctor) {
-        Doctors doctorTable = new Doctors();
+    public Doctors setDoctorInfoByDb(Doctors doctors) {
+        Doctors doctorsTable = new Doctors();
         final UUID id = UUID.randomUUID();
 
-        doctorTable.setId(id);
-        setDoctorObject(doctorTable, doctor);
+        doctorsTable.setId(id);
+        setDoctorObject(doctorsTable, doctors);
 
-        return doctorTable;
+        return doctorsTable;
     }
 
     public Specialization getDoctorSpecializationInfo(UUID specializationId) {
@@ -73,37 +75,40 @@ public class DoctorServiceImpl implements DoctorService {
         return null;
     }
 
-    public Doctors updateDoctorInfo(UUID id, Doctors doctor) {
-        Doctors doctorTable;
+    public Doctors updateDoctorInfo(UUID id, Doctors doctors) {
+        Doctors doctorsTable;
         if (doctorRepository.findById(id).isPresent()) {
-            doctorTable = doctorRepository.findById(id).get();
-            setDoctorObject(doctorTable, doctor);
+            doctorsTable = doctorRepository.findById(id).get();
+            setDoctorObject(doctorsTable, doctors);
 
-            return doctorTable;
+            return doctorsTable;
         } else return null;
     }
 
     public Doctors deleteDoctorFromService(UUID id) {
-        Doctors doctorTable;
+        Doctors doctorsTable;
 
         if (doctorRepository.findById(id).isPresent()) {
-            doctorTable = doctorRepository.findById(id).get();
-            doctorTable.setIsActive(false);
+            doctorsTable = doctorRepository.findById(id).get();
+            doctorsTable.setIsActive(false);
             log.info("Doctor with id {} was deleted", id);
-            return doctorTable;
+            return doctorsTable;
         }
 
         log.info("Doctor with id {} not found", id);
         return null;
     }
 
-    private void setDoctorObject(Doctors doctorTable, Doctors doctorObjectInput) {
-        doctorTable.setFirstName(doctorObjectInput.getFirstName());
-        doctorTable.setLastName(doctorObjectInput.getLastName());
-        doctorTable.setEmail(doctorObjectInput.getEmail());
-        doctorTable.setPassword(doctorObjectInput.getPassword());
-        doctorTable.setRole(doctorObjectInput.getRole());
-        doctorTable.setIsActive(doctorObjectInput.getIsActive());
-        doctorTable.setSpecialization(doctorObjectInput.getSpecialization());
+    private void setDoctorObject(Doctors doctorsTable, Doctors doctorsObjectInput) {
+        Specialization doctorSpecializationInfo = getDoctorSpecializationInfo
+                (doctorsObjectInput.getSpecialization().get(0).getId());
+        doctorsTable.setFirstName(doctorsObjectInput.getFirstName());
+        doctorsTable.setLastName(doctorsObjectInput.getLastName());
+        doctorsTable.setEmail(doctorsObjectInput.getEmail());
+        doctorsTable.setPassword(doctorsObjectInput.getPassword());
+        doctorsTable.setRole(doctorsObjectInput.getRole());
+        doctorsTable.setIsActive(doctorsObjectInput.getIsActive());
+        doctorsTable.setStatus(doctorsObjectInput.getStatus());
+        doctorsTable.setSpecialization(List.of(doctorSpecializationInfo));
     }
 }

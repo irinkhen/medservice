@@ -7,11 +7,12 @@ import java.util.stream.Collectors;
 
 import static com.med.medservice.model.Permissions.DELETE;
 import static com.med.medservice.model.Permissions.READ;
+import static com.med.medservice.model.Permissions.UPDATE;
 import static com.med.medservice.model.Permissions.WRITE;
 
 public enum Role {
     USER(Set.of(READ, WRITE)),
-    ADMIN(Set.of(READ, WRITE, DELETE));
+    ADMIN(Set.of(READ, WRITE, UPDATE, DELETE));
 
     private final Set<Permissions> permissions;
 

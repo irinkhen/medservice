@@ -8,17 +8,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 import static javax.persistence.CascadeType.ALL;
@@ -33,34 +33,35 @@ import static org.hibernate.annotations.FetchMode.JOIN;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class Certificates {
+public class Certificate {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     UUID id;
 
-    @ManyToOne(cascade = ALL)
+    @ManyToOne
+    @Fetch(FetchMode.JOIN)
     Doctors therapist;
 
     @ManyToOne(cascade = ALL)
     Patients patient;
 
-    @OneToMany(cascade = ALL, targetEntity = Certificates.class)
+    @OneToOne(cascade = ALL)
     @Fetch(JOIN)
-    @JoinColumn
-    List<Psycho> psychoanalyse;
+    Psycho psychoanalyse;
 
-    @OneToMany(cascade = ALL, targetEntity = Certificates.class)
+    @OneToOne(cascade = ALL)
     @Fetch(JOIN)
-    @JoinColumn
-    List<Electrocardiogram> electrocardiogram;
+    Electrocardiogram electrocardiogram;
 
-    //@OneToMany(cascade = ALL, targetEntity = Certificates.class)
-    @OneToOne
+    @OneToOne(cascade = ALL)
     @Fetch(JOIN)
-    @JoinColumn
     Vision visionTest;
 
     LocalDateTime created;
+
     LocalDateTime changed;
+
     String diagnose;
+
     Boolean isAvailable;
 }
