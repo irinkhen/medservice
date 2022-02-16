@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface DoctorRepository extends CrudRepository<Doctors, UUID> {
     @Override
     Optional<Doctors> findById(UUID id);
+
+    Optional<Doctors> findByEmail(String email);
 }
