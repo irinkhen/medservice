@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,11 +31,12 @@ public class DoctorController {
     private DoctorService doctorService;
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('read')")
     public ResponseEntity<Doctors> getDoctorById(@PathVariable UUID id) {
         Doctors doctors = doctorService.getDoctorById(id);
 
         if (id == null) {
-            log.info("Doctor with id {} not found!", id);
+            log.info("Doctor id cannot be null");
             return new ResponseEntity<>(BAD_REQUEST);
         } else if (doctors == null) return new ResponseEntity<>(NOT_FOUND);
 
@@ -43,13 +44,14 @@ public class DoctorController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('read')")
     public ResponseEntity<Iterable<Doctors>> getDoctorsList() {
         Iterable<Doctors> doctorsList = doctorService.getDoctorsList();
         return ResponseEntity.accepted().body(doctorsList);
     }
 
     @PostMapping
-    @Transactional
+    @PreAuthorize("hasAuthority('write')")
     public ResponseEntity<Doctors> createDoctor(@RequestBody Doctors doctors) {
         Doctors doctorsTableObject = doctorService.setDoctorInfoByDb(doctors);
 
@@ -66,6 +68,7 @@ public class DoctorController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('update')")
     public ResponseEntity<Doctors> updateDoctorData(@PathVariable UUID id, @RequestBody Doctors doctors) {
         Doctors doctorsTableObject = doctorService.updateDoctorInfo(id, doctors);
         doctorService.saveDataIntoDB(doctorsTableObject);
@@ -74,6 +77,7 @@ public class DoctorController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('delete')")
     public ResponseEntity<Doctors> deleteDoctor(@PathVariable UUID id) {
         Doctors doctorsTableObject = doctorService.deleteDoctorFromService(id);
         doctorService.saveDataIntoDB(doctorsTableObject);

@@ -7,6 +7,7 @@ import com.med.medservice.repository.DoctorRepository;
 import com.med.medservice.repository.SpecializationRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,15 +101,18 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     private void setDoctorObject(Doctors doctorsTable, Doctors doctorsObjectInput) {
-        Specialization doctorSpecializationInfo = getDoctorSpecializationInfo
-                (doctorsObjectInput.getSpecialization().get(0).getId());
         doctorsTable.setFirstName(doctorsObjectInput.getFirstName());
         doctorsTable.setLastName(doctorsObjectInput.getLastName());
         doctorsTable.setEmail(doctorsObjectInput.getEmail());
-        doctorsTable.setPassword(doctorsObjectInput.getPassword());
         doctorsTable.setRole(doctorsObjectInput.getRole());
         doctorsTable.setIsActive(doctorsObjectInput.getIsActive());
         doctorsTable.setStatus(doctorsObjectInput.getStatus());
+
+        Specialization doctorSpecializationInfo = getDoctorSpecializationInfo
+                (doctorsObjectInput.getSpecialization().get(0).getId());
         doctorsTable.setSpecialization(List.of(doctorSpecializationInfo));
+
+        String password = BCrypt.hashpw(doctorsObjectInput.getPassword(), BCrypt.gensalt(12));
+        doctorsTable.setPassword(password);
     }
 }

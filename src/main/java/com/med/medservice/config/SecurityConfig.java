@@ -1,66 +1,59 @@
 package com.med.medservice.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-
-import static com.med.medservice.model.Role.ADMIN;
-import static com.med.medservice.model.Role.USER;
-import static org.springframework.http.HttpMethod.DELETE;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    public SecurityConfig(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    public void configure(HttpSecurity http) throws Exception {
             http
                     .csrf().disable()
                     .authorizeRequests()
-                    .antMatchers(POST, "/api/v1/doctor").hasAnyRole(ADMIN.name(), USER.name())
-                    .antMatchers(GET, "/api/v1/doctor").hasAnyRole(ADMIN.name())
-                    .antMatchers(GET, "/api/v1/doctor/**").hasAnyRole(ADMIN.name(), USER.name())
-                    .antMatchers(PUT, "/api/v1/doctor/**").hasAnyRole(ADMIN.name(), USER.name())
-                    .antMatchers(DELETE, "/api/v1/doctor/**").hasAnyRole(ADMIN.name())
-                    .antMatchers(GET, "/api/v1/certificate/**").hasAnyRole(ADMIN.name())
-                    .antMatchers(GET, "/api/v1/certificate").hasAnyRole(ADMIN.name(), USER.name())
-                    .antMatchers(POST, "/api/v1/certificate").hasAnyRole(ADMIN.name(), USER.name())
-                    .antMatchers(PUT, "/api/v1/certificate/**").hasAnyRole(ADMIN.name(), USER.name())
-                    .antMatchers(DELETE, "/api/v1/certificate/**").hasAnyRole(ADMIN.name())
-                    .antMatchers("/auth").authenticated()
+                    .antMatchers("/")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated()
                     .and().httpBasic()
                     .and().sessionManagement().disable();
     }
 
-    @Bean
     @Override
-    public UserDetailsService userDetailsService() {
-        return new InMemoryUserDetailsManager(
-                User.builder()
-                        .username("admin")
-                        .password(passwordEncoder().encode("p@55w0Rd"))
-                        .roles(ADMIN.name())
-                        .build(),
-                User.builder()
-                        .username("user")
-                        .password(passwordEncoder().encode("p@55w0Rd"))
-                        .roles(USER.name())
-                        .build()
-        );
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(daoAuthenticationProvider());
     }
 
     @Bean
-    protected PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
+    }
+
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+        return daoAuthenticationProvider;
     }
 }

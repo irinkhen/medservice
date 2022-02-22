@@ -8,11 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.ManyToOne;
@@ -22,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.GenerationType.AUTO;
 import static javax.persistence.InheritanceType.JOINED;
 import static lombok.AccessLevel.PRIVATE;
 import static org.hibernate.annotations.FetchMode.JOIN;
@@ -35,11 +33,11 @@ import static org.hibernate.annotations.FetchMode.JOIN;
 @Setter
 public class Certificate {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = AUTO)
     UUID id;
 
     @ManyToOne
-    @Fetch(FetchMode.JOIN)
+    @Fetch(JOIN)
     Doctors therapist;
 
     @ManyToOne(cascade = ALL)

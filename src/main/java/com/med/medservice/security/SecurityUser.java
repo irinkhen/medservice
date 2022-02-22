@@ -9,19 +9,19 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
 import java.util.List;
+import static com.med.medservice.model.UserStatus.ACTIVE;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityUser implements UserDetails {
     String username;
     String password;
-    Boolean isActive;
+    boolean isActive;
     List<SimpleGrantedAuthority> authorities;
 
-    public SecurityUser(List<SimpleGrantedAuthority> authorities, String username, String password, Boolean isActive) {
+    public SecurityUser(List<SimpleGrantedAuthority> authorities, String username, String password, boolean isActive) {
         this.authorities = authorities;
         this.username = username;
         this.password = password;
@@ -65,12 +65,12 @@ public class SecurityUser implements UserDetails {
 
     public static UserDetails fromUser(Doctors doctors) {
         return new User(
-                doctors.getFirstName(),
+                doctors.getEmail(),
                 doctors.getPassword(),
-                doctors.getIsActive().equals(UserStatus.ACTIVE),
-                doctors.getIsActive().equals(UserStatus.ACTIVE),
-                doctors.getIsActive().equals(UserStatus.ACTIVE),
-                doctors.getIsActive().equals(UserStatus.ACTIVE),
+                doctors.getStatus().equals(ACTIVE),
+                doctors.getStatus().equals(ACTIVE),
+                doctors.getStatus().equals(ACTIVE),
+                doctors.getStatus().equals(ACTIVE),
                 doctors.getRole().getAuthorities()
         );
     }

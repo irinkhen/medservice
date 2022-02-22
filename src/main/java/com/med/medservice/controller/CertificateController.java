@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +33,7 @@ public class CertificateController {
     private CertificateService certificateService;
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('read')")
     public ResponseEntity<Certificate> getCertificateById(@PathVariable UUID id) {
         Certificate certificate = certificateService.getCertificateById(id);
         if (id == null) {
@@ -49,12 +51,14 @@ public class CertificateController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('read')")
     public ResponseEntity<List<Certificate>> getAllCertificates() {
         List<Certificate> certificateList = certificateService.getAllCertificatesList();
         return ResponseEntity.accepted().body(certificateList);
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('write')")
     public ResponseEntity<Certificate> createCertificate(@RequestBody Certificate certificate) {
         Certificate certificateObject = certificateService.createCertificateObject(certificate);
 
@@ -69,6 +73,7 @@ public class CertificateController {
     }
 
     @PutMapping("/id")
+    @PreAuthorize("hasAuthority('update')")
     public ResponseEntity<Certificate> updateCertificateData(
             @PathVariable UUID id,
             @RequestBody Certificate certificate
@@ -80,6 +85,7 @@ public class CertificateController {
     }
 
     @DeleteMapping("/id")
+    @PreAuthorize("hasAuthority('delete')")
     public ResponseEntity<Certificate> deleteCertificateFromDB(@PathVariable UUID id) {
         Certificate certificateTable = certificateService.deleteCertificateFromAccess(id);
         certificateService.saveDataIntoDB(certificateTable);
