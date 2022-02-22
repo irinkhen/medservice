@@ -1,7 +1,6 @@
 package com.med.medservice.security;
 
 import com.med.medservice.domain.Doctors;
-import com.med.medservice.model.UserStatus;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;

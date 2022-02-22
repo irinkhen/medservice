@@ -86,15 +86,11 @@ public class CertificateController {
 
     @DeleteMapping("/id")
     @PreAuthorize("hasAuthority('delete')")
-    public ResponseEntity<Certificate> deleteCertificateFromDB(@PathVariable UUID id) {
+    public ResponseEntity.BodyBuilder deleteCertificateFromDB(@PathVariable UUID id) {
         Certificate certificateTable = certificateService.deleteCertificateFromAccess(id);
         certificateService.saveDataIntoDB(certificateTable);
 
-        if (certificateTable.getIsAvailable()) {
-            log.info("User with id {} is not deleted", id);
-            return ResponseEntity.badRequest().body(certificateTable);
-        }
-        return ResponseEntity.accepted().body(certificateTable);
+        return ResponseEntity.accepted();
     }
 
 

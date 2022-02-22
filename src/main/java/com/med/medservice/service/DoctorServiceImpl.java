@@ -44,12 +44,15 @@ public class DoctorServiceImpl implements DoctorService {
         return doctorRepository.findAll();
     }
 
-    public Doctors setDoctorInfoByDb(Doctors doctors) {
+    public Doctors createNewDoctor(Doctors doctorInfo) {
         Doctors doctorsTable = new Doctors();
         final UUID id = UUID.randomUUID();
+        Specialization doctorSpecializationInfo = getDoctorSpecializationInfo
+                (doctorInfo.getSpecialization().get(0).getId());
 
         doctorsTable.setId(id);
-        setDoctorObject(doctorsTable, doctors);
+        doctorsTable.setSpecialization(List.of(doctorSpecializationInfo));
+        setDoctorObject(doctorsTable, doctorInfo);
 
         return doctorsTable;
     }
@@ -67,7 +70,7 @@ public class DoctorServiceImpl implements DoctorService {
             specializationTable.setSpecialization(doctorSpecializationName);
             specializationTable.setId(specializationId);
 
-            log.info("Get doctor specialization: {} with id {}", specializationId, doctorSpecializationName);
+            log.info("Get doctor specialization: {} with id {}", doctorSpecializationName, specializationId);
 
             return specializationTable;
         }
@@ -80,10 +83,13 @@ public class DoctorServiceImpl implements DoctorService {
         Doctors doctorsTable;
         if (doctorRepository.findById(id).isPresent()) {
             doctorsTable = doctorRepository.findById(id).get();
+            log.info("Find doctor with id {}", id);
             setDoctorObject(doctorsTable, doctors);
-
             return doctorsTable;
-        } else return null;
+        } else {
+            log.info("Doctor with id {} not found", id);
+            return null;
+        }
     }
 
     public Doctors deleteDoctorFromService(UUID id) {
@@ -107,10 +113,6 @@ public class DoctorServiceImpl implements DoctorService {
         doctorsTable.setRole(doctorsObjectInput.getRole());
         doctorsTable.setIsActive(doctorsObjectInput.getIsActive());
         doctorsTable.setStatus(doctorsObjectInput.getStatus());
-
-        Specialization doctorSpecializationInfo = getDoctorSpecializationInfo
-                (doctorsObjectInput.getSpecialization().get(0).getId());
-        doctorsTable.setSpecialization(List.of(doctorSpecializationInfo));
 
         String password = BCrypt.hashpw(doctorsObjectInput.getPassword(), BCrypt.gensalt(12));
         doctorsTable.setPassword(password);

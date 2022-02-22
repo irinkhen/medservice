@@ -12,7 +12,7 @@ public interface DoctorService {
 
     Iterable<Doctors> getDoctorsList();
 
-    Doctors setDoctorInfoByDb(Doctors doctors);
+    Doctors createNewDoctor(Doctors doctors);
 
     Specialization getDoctorSpecializationInfo(UUID specialization);
 

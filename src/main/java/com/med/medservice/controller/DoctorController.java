@@ -53,7 +53,7 @@ public class DoctorController {
     @PostMapping
     @PreAuthorize("hasAuthority('write')")
     public ResponseEntity<Doctors> createDoctor(@RequestBody Doctors doctors) {
-        Doctors doctorsTableObject = doctorService.setDoctorInfoByDb(doctors);
+        Doctors doctorsTableObject = doctorService.createNewDoctor(doctors);
 
         if (doctorsTableObject.getEmail() == null && doctorsTableObject.getPassword() == null) {
             log.info("Email or password cannot be null");
@@ -62,6 +62,7 @@ public class DoctorController {
             log.info("You need to fill user role");
             return ResponseEntity.badRequest().body(doctorsTableObject);
         }
+
         doctorService.saveDataIntoDB(doctorsTableObject);
 
         return ResponseEntity.accepted().body(doctorsTableObject);
@@ -78,16 +79,10 @@ public class DoctorController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('delete')")
-    public ResponseEntity<Doctors> deleteDoctor(@PathVariable UUID id) {
+    public ResponseEntity.BodyBuilder deleteDoctor(@PathVariable UUID id) {
         Doctors doctorsTableObject = doctorService.deleteDoctorFromService(id);
         doctorService.saveDataIntoDB(doctorsTableObject);
 
-        if (doctorsTableObject.getIsActive()) {
-            log.info("User with id {} is not deleted", id);
-            return ResponseEntity.badRequest().body(doctorsTableObject);
-        }
-
-        return ResponseEntity.accepted().body(doctorsTableObject);
+        return ResponseEntity.accepted();
     }
-
 }
